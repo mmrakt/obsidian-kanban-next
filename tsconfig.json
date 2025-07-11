@@ -16,10 +16,11 @@
     "paths": {
       "react": ["./node_modules/preact/compat/"],
       "react-dom": ["./node_modules/preact/compat/"],
-      "react-types": ["./node_modules/@types/react/"]
+      "react-types": ["./node_modules/@types/react/"],
+      "src/*": ["./src/*"]
     },
     "skipLibCheck": true,
     "target": "es2018"
   },
-  "include": ["src/*.ts", "src/*.tsx"]
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
 }

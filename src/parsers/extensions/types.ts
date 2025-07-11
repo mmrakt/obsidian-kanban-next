@@ -5,6 +5,7 @@ import { FileAccessor } from '../helpers/parser';
 
 export interface ValueNode extends Parent {
   value: string;
+  type: string;
 }
 
 export interface DateNode extends ValueNode {

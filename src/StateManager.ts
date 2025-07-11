@@ -5,7 +5,7 @@ import { useEffect, useState } from 'preact/compat';
 import { KanbanView } from './KanbanView';
 import { KanbanSettings, SettingRetrievers } from './Settings';
 import { getDefaultDateFormat, getDefaultTimeFormat } from './components/helpers';
-import { Board, BoardTemplate, Item } from './components/types';
+import { Board, BoardTemplate, Item, Lane } from './components/types';
 import { ListFormat } from './parsers/List';
 import { BaseFormat, frontmatterKey, shouldRefreshBoard } from './parsers/common';
 import { getTaskStatusDone } from './parsers/helpers/inlineMetadata';
@@ -385,10 +385,10 @@ export class StateManager {
       return this.parser.updateItemContent(item, titleRaw);
     };
 
-    const lanes = board.children.map((lane) => {
+    const lanes = board.children.map((lane: Lane) => {
       return update(lane, {
         children: {
-          $set: lane.children.filter((item) => {
+          $set: lane.children.filter((item: Item) => {
             const isComplete = item.data.checked && item.data.checkChar === getTaskStatusDone();
             if (lane.data.shouldMarkItemsComplete || isComplete) {
               archived.push(item);

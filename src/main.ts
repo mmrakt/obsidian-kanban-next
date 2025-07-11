@@ -789,7 +789,7 @@ export default class KanbanPlugin extends Plugin {
               self.kanbanFileModes[this.id || state.state.file] !== 'markdown'
             ) {
               // Then check for the kanban frontMatterKey
-              const cache = self.app.metadataCache.getCache(state.state.file);
+              const cache = self.app.metadataCache.getCache(state.state.file as string);
 
               if (cache?.frontmatter && cache.frontmatter[frontmatterKey]) {
                 // If we have it, force the view type to kanban
@@ -798,7 +798,7 @@ export default class KanbanPlugin extends Plugin {
                   type: kanbanViewType,
                 };
 
-                self.kanbanFileModes[state.state.file] = kanbanViewType;
+                self.kanbanFileModes[state.state.file as string] = kanbanViewType;
 
                 return next.apply(this, [newState, ...rest]);
               }

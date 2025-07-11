@@ -81,7 +81,7 @@ export function DragDropApp({ win, plugin }: { win: Window; plugin: KanbanPlugin
             });
           });
 
-          return stateManager.setState((board) => insertEntity(board, dropPath, items));
+          return stateManager.setState((board: Board) => insertEntity(board, dropPath, items));
         } catch (e) {
           stateManager.setError(e);
           console.error(e);
@@ -109,7 +109,7 @@ export function DragDropApp({ win, plugin }: { win: Window; plugin: KanbanPlugin
           dropPath.push(0);
         }
 
-        return stateManager.setState((board) => {
+        return stateManager.setState((board: Board) => {
           const entity = getEntityFromPath(board, dragPath);
           const newBoard: Board = moveEntity(
             board,
@@ -187,11 +187,11 @@ export function DragDropApp({ win, plugin }: { win: Window; plugin: KanbanPlugin
       const destinationView = plugin.getKanbanView(dropEntity.scopeId, dropEntityData.win);
       const destinationStateManager = plugin.stateManagers.get(destinationView.file);
 
-      sourceStateManager.setState((sourceBoard) => {
+      sourceStateManager.setState((sourceBoard: Board) => {
         const entity = getEntityFromPath(sourceBoard, dragPath);
         let replacementEntity: Nestable;
 
-        destinationStateManager.setState((destinationBoard) => {
+        destinationStateManager.setState((destinationBoard: Board) => {
           if (inDropArea) {
             const parent = getEntityFromPath(destinationStateManager.state, dropPath);
             const shouldAppend =

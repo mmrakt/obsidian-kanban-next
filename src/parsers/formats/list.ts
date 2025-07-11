@@ -1,6 +1,11 @@
 import update from 'immutability-helper';
 import { Content, List, Parent, Root } from 'mdast';
-import { ListItem } from 'mdast-util-from-markdown/lib';
+import { ListItem } from 'mdast';
+
+interface TaskItem extends ListItem {
+  checked: boolean;
+  checkChar?: string;
+}
 import { toString } from 'mdast-util-to-string';
 import { stringifyYaml } from 'obsidian';
 import { KanbanSettings } from 'src/Settings';
@@ -44,16 +49,13 @@ import {
 } from '../helpers/parser';
 import { parseFragment } from '../parseMarkdown';
 
-interface TaskItem extends ListItem {
-  checkChar?: string;
-}
 
 export function listItemToItemData(stateManager: StateManager, md: string, item: TaskItem) {
   const moveTags = stateManager.getSetting('move-tags');
   const moveDates = stateManager.getSetting('move-dates');
 
-  const startNode = item.children.first();
-  const endNode = item.children.last();
+  const startNode = (item as any).children.first();
+  const endNode = (item as any).children.last();
 
   const start =
     startNode.type === 'paragraph'
@@ -80,7 +82,7 @@ export function listItemToItemData(stateManager: StateManager, md: string, item:
     ['text', 'wikilink', 'embedWikilink', 'image', 'inlineCode', 'code', 'hashtag'],
     (node: any, i, parent) => {
       if (node.type === 'hashtag') {
-        if (!parent.children.first()?.value?.startsWith('```')) {
+        if (!(parent as any).children.first()?.value?.startsWith('```')) {
           titleSearch += ' #' + node.value;
         }
       } else {
@@ -125,7 +127,7 @@ export function listItemToItemData(stateManager: StateManager, md: string, item:
 
       if (
         genericNode.type === 'hashtag' &&
-        !(parent.children.first() as any)?.value?.startsWith('```')
+        !((parent as any).children.first() as any)?.value?.startsWith('```')
       ) {
         if (!itemData.metadata.tags) {
           itemData.metadata.tags = [];
@@ -246,7 +248,7 @@ export function astToUnhydratedBoard(
 ): Board {
   const lanes: Lane[] = [];
   const archive: Item[] = [];
-  root.children.forEach((child, index) => {
+  root.children.forEach((child: any, index: number) => {
     if (child.type === 'heading') {
       const isArchive = isArchiveLane(child, root.children, index);
       const headingBoundary = getNodeContentBoundary(child as Parent);
@@ -275,7 +277,7 @@ export function astToUnhydratedBoard(
 
       if (isArchive && list) {
         archive.push(
-          ...(list as List).children.map((listItem) => {
+          ...(list as List).children.map((listItem: any) => {
             return {
               ...ItemTemplate,
               id: generateInstanceId(),
@@ -300,7 +302,7 @@ export function astToUnhydratedBoard(
       } else {
         lanes.push({
           ...LaneTemplate,
-          children: (list as List).children.map((listItem) => {
+          children: (list as List).children.map((listItem: any) => {
             const data = listItemToItemData(stateManager, md, listItem);
             return {
               ...ItemTemplate,
@@ -336,7 +338,7 @@ export function updateItemContent(stateManager: StateManager, oldItem: Item, new
   const md = `- [${oldItem.data.checkChar}] ${addBlockId(indentNewLines(newContent), oldItem)}`;
 
   const ast = parseFragment(stateManager, md);
-  const itemData = listItemToItemData(stateManager, md, (ast.children[0] as List).children[0]);
+  const itemData = listItemToItemData(stateManager, md, (ast.children[0] as List).children[0] as TaskItem);
   const newItem = update(oldItem, {
     data: {
       $set: itemData,
@@ -360,7 +362,7 @@ export function newItem(
 ) {
   const md = `- [${checkChar}] ${indentNewLines(newContent)}`;
   const ast = parseFragment(stateManager, md);
-  const itemData = listItemToItemData(stateManager, md, (ast.children[0] as List).children[0]);
+  const itemData = listItemToItemData(stateManager, md, (ast.children[0] as List).children[0] as TaskItem);
 
   itemData.forceEditMode = !!forceEdit;
 
